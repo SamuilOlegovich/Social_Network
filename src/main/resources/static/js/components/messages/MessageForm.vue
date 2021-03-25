@@ -1,48 +1,28 @@
+
 <template>
-    <v-layout row>
-        <v-text-field
-                label="New message"
-                placeholder="Write something"
-                v-model="text"
-        @keyup.enter="save"
-        />
-        <v-btn @click="save">
-        Save
+    <v-card class="my-2">
+        <v-card-text primary-title>
+            <i>({{ message.id }})</i>
+            {{ message.text }}
+        </v-card-text>
+        <v-card-actions>
+            <v-btn value="Edit" @click="edit" small flat round>Edit</v-btn>
+        <v-btn icon @click="del" small>
+        <v-icon>delete</v-icon>
     </v-btn>
-</v-layout>
+</v-card-actions>
+        </v-card>
         </template>
 
 <script>
-    import { mapActions } from 'vuex'
-    import * as Sentry from '@sentry/browser'
     export default {
-        props: ['messageAttr'],
-        data() {
-            return {
-                text: '',
-                id: null
-            }
-        },
-        watch: {
-            messageAttr(newVal, oldVal) {
-                this.text = newVal.text
-                this.id = newVal.id
-            }
-        },
+        props: ['message', 'editMessage', 'deleteMessage', 'messages'],
         methods: {
-            ...mapActions(['addMessageAction', 'updateMessageAction']),
-            save() {
-                const message = {
-                    id: this.id,
-                    text: this.text
-                }
-                if (this.id) {
-                    this.updateMessageAction(message)
-                } else {
-                    this.addMessageAction(message)
-                }
-                this.text = ''
-                this.id = null
+            edit() {
+                this.editMessage(this.message)
+            },
+            del() {
+                this.deleteMessage(this.message)
             }
         }
     }
