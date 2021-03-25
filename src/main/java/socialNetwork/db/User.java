@@ -1,10 +1,12 @@
 package socialNetwork.db;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 
@@ -14,7 +16,7 @@ import java.time.LocalDateTime;
 @Table(name = "usr")
 // сериализовать класс не планируем потому все стандартные методы генирируем обычной анотацией
 @Data
-public class User {
+public class User implements Serializable {
     // ни какого автогенератора айди не указываем,
     // так как айдишники будут приходить из гугл аунтефикатора
     @Id
@@ -25,6 +27,64 @@ public class User {
     private String email;
     private String gender;
     private String locale;
-    // дату последнего визита
+    // указываем как у нас будет сохранятся дата при сериализации
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime lastVisit;
+
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getUserpic() {
+        return userpic;
+    }
+
+    public void setUserpic(String userpic) {
+        this.userpic = userpic;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public String getLocale() {
+        return locale;
+    }
+
+    public void setLocale(String locale) {
+        this.locale = locale;
+    }
+
+    public LocalDateTime getLastVisit() {
+        return lastVisit;
+    }
+
+    public void setLastVisit(LocalDateTime lastVisit) {
+        this.lastVisit = lastVisit;
+    }
 }

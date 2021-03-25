@@ -41,6 +41,12 @@ dependencies {
 	// для авторизации через гугл аккаунт
 	compile('org.springframework.security.oauth.boot:spring-security-oauth2-autoconfigure:2.0.0.RELEASE')
 
+	//
+	compile("org.springframework.boot:spring-boot-starter-thymeleaf")
+	//
+	compile('org.springframework.session:spring-session-jdbc')
+
+
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}

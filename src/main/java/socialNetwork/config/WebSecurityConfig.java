@@ -23,11 +23,23 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         // указываем куда можно ходить без авторизации
         http
-                .authorizeRequests()
-                .mvcMatchers("/").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .csrf().disable();
+//                .authorizeRequests()
+//                .mvcMatchers("/").permitAll()
+//                .anyRequest().authenticated()
+//                .and()
+//                .csrf().disable();
+             // для работы с визуальной частью
+             .antMatcher("/**")
+                    .authorizeRequests()
+                    .antMatchers("/",
+                            "/login**",
+                            "/js/**",
+                            "/error**").permitAll()
+                    .anyRequest().authenticated()
+                    // для выхода (логаут)
+                    .and().logout().logoutSuccessUrl("/").permitAll()
+                    .and()
+                    .csrf().disable();
     }
 
     // для сохранения авторизованного пользователя в базу данных
