@@ -28,5 +28,7 @@ export function disconnect() {
 }
 
 export function sendMessage(message) {
+// JSON.stringify(message) - сюда обязательно нужно ложить сообщение сериализованное в строку
+// иначе можно сильно подколоться и сообщения будут уходить пустые
     stompClient.send("/app/changeMessage", {}, JSON.stringify(message))
 }

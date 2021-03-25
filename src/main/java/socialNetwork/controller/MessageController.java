@@ -4,6 +4,8 @@ package socialNetwork.controller;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 import socialNetwork.db.Message;
 import socialNetwork.db.Views;
@@ -70,6 +72,19 @@ public class MessageController {
     @DeleteMapping("{id}")
     public void delete(@PathVariable("id") Message message) {
         messageRepo.delete(message);
+    }
+
+
+    // WebSocket methods ----------------------
+
+    // отвечает за получение сообщений через WebSocket
+    // (клиент шлет сообщения на данный мепин и мы его принимаем)
+    @MessageMapping("/changeMessage")
+    // означает в какой топик (канал в который прилетают сообщения на которые подписываются клиенты)
+    // мы будем складывать ответы
+    @SendTo("/topic/activity")
+    public Message change(Message message) {
+        return messageRepo.save(message);
     }
 
 }

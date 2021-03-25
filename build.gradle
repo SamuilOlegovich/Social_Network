@@ -36,12 +36,16 @@ dependencies {
 	implementation 'javax.xml.bind:jaxb-api'
 //	implementation 'com.sun.xml.bind:jaxb-impl'
 
+
+	// для вебсокета
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
 	// подключаем секюрити для авторизации
 	compile('org.springframework.boot:spring-boot-starter-security')
 	// для авторизации через гугл аккаунт
 	compile('org.springframework.security.oauth.boot:spring-security-oauth2-autoconfigure:2.0.0.RELEASE')
 
-	//
+	// зависимость таймлиф
 	compile("org.springframework.boot:spring-boot-starter-thymeleaf")
 	//
 	compile('org.springframework.session:spring-session-jdbc')
