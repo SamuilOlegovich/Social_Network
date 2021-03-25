@@ -1,28 +1,59 @@
-
 <template>
-    <v-card class="my-2">
-        <v-card-text primary-title>
-            <i>({{ message.id }})</i>
-            {{ message.text }}
-        </v-card-text>
-        <v-card-actions>
-            <v-btn value="Edit" @click="edit" small flat round>Edit</v-btn>
-        <v-btn icon @click="del" small>
-        <v-icon>delete</v-icon>
+    <v-layout row>
+        <v-text-field
+                label="New message"
+                placeholder="Write something"
+                v-model="text"
+        />
+        <v-btn @click="save">
+        Save
     </v-btn>
-</v-card-actions>
-        </v-card>
+</v-layout>
         </template>
 
 <script>
+    import messagesApi from 'api/messages'
     export default {
-        props: ['message', 'editMessage', 'deleteMessage', 'messages'],
+        props: ['messages', 'messageAttr'],
+        data() {
+            return {
+                text: '',
+                id: ''
+            }
+        },
+        watch: {
+            messageAttr(newVal, oldVal) {
+                this.text = newVal.text
+                this.id = newVal.id
+            }
+        },
         methods: {
-            edit() {
-                this.editMessage(this.message)
-            },
-            del() {
-                this.deleteMessage(this.message)
+            save() {
+                const message = {
+                    id: this.id,
+                    text: this.text
+                }
+                if (this.id) {
+                    messagesApi.update(message).then(result =>
+                        result.json().then(data => {
+                            const index = this.messages.findIndex(item => item.id === data.id)
+                            this.messages.splice(index, 1, data)
+                        })
+                    )
+                } else {
+                    messagesApi.add(message).then(result =>
+                        result.json().then(data => {
+                            const index = this.messages.findIndex(item => item.id === data.id)
+                            if (index > -1) {
+                                this.messages.splice(index, 1, data)
+                            } else {
+                                this.messages.push(data)
+                            }
+                        })
+                    )
+                }
+                this.text = ''
+                this.id = ''
             }
         }
     }
