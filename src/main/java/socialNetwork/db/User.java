@@ -1,6 +1,7 @@
 package socialNetwork.db;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 
 import javax.persistence.Entity;
@@ -20,9 +21,12 @@ public class User implements Serializable {
     // ни какого автогенератора айди не указываем,
     // так как айдишники будут приходить из гугл аунтефикатора
     @Id
+    @JsonView(Views.IdName.class)
     private String id;
     // поля которые будут приходит от гугла
+    @JsonView(Views.IdName.class)
     private String name;
+    @JsonView(Views.IdName.class)
     private String userpic;
     private String email;
     private String gender;

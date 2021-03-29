@@ -9,6 +9,7 @@ import lombok.ToString;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 @Data
@@ -25,6 +26,21 @@ public class Message {
     // используем для скрытия полей (для этого создаем дополнительный класс Views)
     @JsonView(Views.IdName.class)
     private String text;
+
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    @JsonView(Views.FullMessage.class)
+    private User author;
+
+    // к одному сообщению относятся много комментариев OneToMany
+    // мепим по полю - message
+    // orphanRemoval = true - если данный меседж удаляется, то все коменты к нему тоже должны удалится
+    @OneToMany(mappedBy = "message", orphanRemoval = true)
+    @JsonView(Views.FullMessage.class)
+    private List<Comment> comments;
+
+
 
     // указываем что поле не обновляемое
     @Column(updatable = false)
@@ -99,5 +115,21 @@ public class Message {
 
     public void setLinkCover(String linkCover) {
         this.linkCover = linkCover;
+    }
+
+    public User getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(User author) {
+        this.author = author;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
     }
 }
