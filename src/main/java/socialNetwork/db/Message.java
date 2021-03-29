@@ -1,8 +1,7 @@
 package socialNetwork.db;
 
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.annotation.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -17,6 +16,8 @@ import java.util.List;
 @Table                              // указываем что эту сущность нужно искать в таблице
 @ToString(of = {"id", "text"})      // для автоматической генирации метода toString()
 @EqualsAndHashCode(of = {"id"})     // тоже для Equals
+// чтобы избезать циклическую зависимость
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class , property = "id")
 public class Message {
     @Id // обязательно библиотека javax.persistence.*;
     @GeneratedValue(strategy = GenerationType.AUTO)

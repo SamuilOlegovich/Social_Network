@@ -1,5 +1,5 @@
 package socialNetwork.dto;
 
 public enum  ObjectType {
-    MESSAGE
+    MESSAGE, COMMENT
 }

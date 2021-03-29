@@ -1,6 +1,9 @@
 package socialNetwork.db;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -25,12 +28,19 @@ public class Comment {
     // посему отношение коментак к сообщению - множество к одному
     @ManyToOne
     @JoinColumn(name = "message_id")
+    // отображает поле только когда запрашиваем полный комментарий
+    // работаеи нормально - хорошо
+//    @JsonView(Views.FullComment.class)
+    // впадет в циклическую зависимость
+    // (для избежания ставим доп аноиацию - @JsonIdentityInfo над классом - Message)
+    @JsonView(Views.IdName.class)
     private Message message;
 
     @ManyToOne
     // указываем что поле не может быть нулл и оно не обновляется
     @JoinColumn(name = "user_id", nullable = false, updatable = false)
-    @JsonView(Views.FullMessage.class)
+    // отображает всякий раз когда мы запрашиваем наш комент
+    @JsonView(Views.IdName.class)
     private User author;
 
 

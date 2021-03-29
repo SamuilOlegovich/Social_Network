@@ -46,8 +46,8 @@ public class MessageController {
 
     @Autowired
     public MessageController(MessageRepo messageRepo, WsSender wsSender) {
-        this.messageRepo = messageRepo;
         this.wsSender = wsSender.getSender(ObjectType.MESSAGE, Views.Id.class);
+        this.messageRepo = messageRepo;
     }
 
 

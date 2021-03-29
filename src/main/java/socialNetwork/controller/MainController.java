@@ -56,6 +56,9 @@ public class MainController {
             data.put("profile", user);
             String messages = writer.writeValueAsString(messageRepo.findAll());
             model.addAttribute("messages", messages);
+        } else {
+            // чтобы не вылетало при деавторизации
+            model.addAttribute("messages", "[]");
         }
 
         model.addAttribute("frontendData", data);
