@@ -25,12 +25,18 @@ public class WsEventDto {
     @JsonRawValue
     private String body;
 
-    public WsEventDto() {
-    }
+//    public WsEventDto() {
+//    }
 
-    public WsEventDto(ObjectType objectType, EventType eventType, String body) {
-        this.objectType = objectType;
-        this.eventType = eventType;
-        this.body = body;
-    }
+
+
+
+
+
+
+//    public WsEventDto(ObjectType objectType, EventType eventType, String body) {
+//        this.objectType = objectType;
+//        this.eventType = eventType;
+//        this.body = body;
+//    }
 }
