@@ -48,7 +48,7 @@ dependencies {
 	// зависимость таймлиф
 	compile("org.springframework.boot:spring-boot-starter-thymeleaf")
 	//
-	compile('org.springframework.session:spring-session-jdbc')
+//	compile('org.springframework.session:spring-session-jdbc')
 
 	// для получения странички и распарсивания ее
 	implementation 'org.jsoup:jsoup:1.13.1'

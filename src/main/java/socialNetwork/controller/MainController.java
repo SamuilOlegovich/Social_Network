@@ -18,6 +18,7 @@ import socialNetwork.db.User;
 import socialNetwork.db.Views;
 import socialNetwork.dto.MessagePageDto;
 import socialNetwork.repo.MessageRepo;
+import socialNetwork.repo.UserDetailsRepo;
 import socialNetwork.service.MessageService;
 
 import java.util.HashMap;
@@ -29,23 +30,32 @@ import static socialNetwork.controller.MessageController.MESSAGES_PER_PAGE;
 @Controller
 @RequestMapping("/")
 public class MainController {
+    private final UserDetailsRepo userDetailsRepo;
     private final MessageService messageService;
     // для дев не дев профайла
     @Value("${spring.profiles.active}")
     private String profile;
 
-    private final ObjectWriter writer;
+    private final ObjectWriter messageWriter;
+    private final ObjectWriter profileWriter;
 
 
     @Autowired
     public MainController(
             MessageService messageService,
-            ObjectMapper objectMapper
+            UserDetailsRepo userDetailsRepo,
+            ObjectMapper inObjectMapper
     ) {
+        this.userDetailsRepo = userDetailsRepo;
         this.messageService = messageService;
-        this.writer = objectMapper
-                .setConfig(objectMapper.getSerializationConfig())
+
+        ObjectMapper objectMapper = inObjectMapper
+                .setConfig(inObjectMapper.getSerializationConfig());
+
+        this.messageWriter = objectMapper
                 .writerWithView(Views.FullMessage.class);
+        this.profileWriter = objectMapper
+                .writerWithView(Views.FullProfile.class);
     }
 
 
@@ -60,13 +70,15 @@ public class MainController {
         HashMap<Object, Object> data = new HashMap<>();
 
         if (user != null) {
-            data.put("profile", user);
+            User userFromDb = userDetailsRepo.findById(user.getId()).get();
+            String serializedProfile = profileWriter.writeValueAsString(userFromDb);
+            model.addAttribute("profile", serializedProfile);
 
             Sort sort = Sort.by(Sort.Direction.DESC, "id");
             PageRequest pageRequest = PageRequest.of(0, MESSAGES_PER_PAGE, sort );
             MessagePageDto messagePageDto = messageService.findAll(pageRequest);
 
-            String messages = writer.writeValueAsString(messagePageDto.getMessages());
+            String messages = messageWriter.writeValueAsString(messagePageDto.getMessages());
 
             model.addAttribute("messages", messages);
             data.put("currentPage", messagePageDto.getCurrentPage());
@@ -74,6 +86,8 @@ public class MainController {
         } else {
             // чтобы не вылетало при деавторизации
             model.addAttribute("messages", "[]");
+            // если пользователь не авторизован
+            model.addAttribute("profile", "null");
         }
 
         model.addAttribute("frontendData", data);

@@ -1,15 +1,14 @@
 package socialNetwork.db;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.annotation.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-
+import java.util.HashSet;
+import java.util.Set;
 
 
 @Entity
@@ -17,6 +16,7 @@ import java.time.LocalDateTime;
 @Table(name = "usr")
 // сериализовать класс не планируем потому все стандартные методы генирируем обычной анотацией
 @Data
+@EqualsAndHashCode(of = { "id" })
 public class User implements Serializable {
     // ни какого автогенератора айди не указываем,
     // так как айдишники будут приходить из гугл аунтефикатора
@@ -29,70 +29,50 @@ public class User implements Serializable {
     @JsonView(Views.IdName.class)
     private String userpic;
     private String email;
+    @JsonView(Views.FullProfile.class)
     private String gender;
+    @JsonView(Views.FullProfile.class)
     private String locale;
     // указываем как у нас будет сохранятся дата при сериализации
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonView(Views.FullProfile.class)
     private LocalDateTime lastVisit;
 
 
 
+    // подписки пользователя (на кого подписан)
+    @ManyToMany
+    @JoinTable(
+            // имя таблицы
+            name = "user_subscriptions",
+            joinColumns = @JoinColumn(name = "subscriber_id"),
+            inverseJoinColumns = @JoinColumn(name = "channel_id")
+    )
+    @JsonView(Views.FullProfile.class)
+    // кастомизирует анотацию @JsonIdentityInfo
+    @JsonIdentityReference
+    // чтоб избежать стековервло при сериализации
+    @JsonIdentityInfo(
+            property = "id",
+            generator = ObjectIdGenerators.PropertyGenerator.class
+    )
+    private Set<User> subscriptions = new HashSet<>();
 
 
 
-//    public String getId() {
-//        return id;
-//    }
-//
-//    public void setId(String id) {
-//        this.id = id;
-//    }
-//
-//    public String getName() {
-//        return name;
-//    }
-//
-//    public void setName(String name) {
-//        this.name = name;
-//    }
-//
-//    public String getUserpic() {
-//        return userpic;
-//    }
-//
-//    public void setUserpic(String userpic) {
-//        this.userpic = userpic;
-//    }
-//
-//    public String getEmail() {
-//        return email;
-//    }
-//
-//    public void setEmail(String email) {
-//        this.email = email;
-//    }
-//
-//    public String getGender() {
-//        return gender;
-//    }
-//
-//    public void setGender(String gender) {
-//        this.gender = gender;
-//    }
-//
-//    public String getLocale() {
-//        return locale;
-//    }
-//
-//    public void setLocale(String locale) {
-//        this.locale = locale;
-//    }
-//
-//    public LocalDateTime getLastVisit() {
-//        return lastVisit;
-//    }
-//
-//    public void setLastVisit(LocalDateTime lastVisit) {
-//        this.lastVisit = lastVisit;
-//    }
+    // подписчики пользователя (кто подписан)
+    @ManyToMany
+    @JoinTable(
+            name = "user_subscriptions",
+            joinColumns = @JoinColumn(name = "channel_id"),
+            inverseJoinColumns = @JoinColumn(name = "subscriber_id")
+    )
+    @JsonView(Views.FullProfile.class)
+    @JsonIdentityReference
+    @JsonIdentityInfo(
+            property = "id",
+            generator = ObjectIdGenerators.PropertyGenerator.class
+    )
+    private Set<User> subscribers = new HashSet<>();
+
 }
