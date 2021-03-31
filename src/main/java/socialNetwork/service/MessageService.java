@@ -11,12 +11,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import socialNetwork.db.Message;
 import socialNetwork.db.User;
+import socialNetwork.db.UserSubscription;
 import socialNetwork.db.Views;
 import socialNetwork.dto.EventType;
 import socialNetwork.dto.MessagePageDto;
 import socialNetwork.dto.MetaDto;
 import socialNetwork.dto.ObjectType;
 import socialNetwork.repo.MessageRepo;
+import socialNetwork.repo.UserSubscriptionRepo;
 import socialNetwork.util.WsSender;
 
 import java.io.IOException;
@@ -25,7 +27,7 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+import java.util.stream.Collectors;
 
 
 @Service
@@ -40,14 +42,20 @@ public class MessageService {
     private static Pattern IMG_REGEX = Pattern.compile(IMAGE_PATTERN, Pattern.CASE_INSENSITIVE);
 
     private final BiConsumer<EventType, Message> wsSender;
+
+    private final UserSubscriptionRepo userSubscriptionRepo;
     private final MessageRepo messageRepo;
 
 
 
     @Autowired
-    public MessageService(MessageRepo messageRepo, WsSender wsSender) {
-        this.messageRepo = messageRepo;
+    public MessageService(MessageRepo messageRepo,
+                          WsSender wsSender,
+                          UserSubscriptionRepo userSubscriptionRepo
+    ) {
         this.wsSender = wsSender.getSender(ObjectType.MESSAGE, Views.IdName.class);
+        this.userSubscriptionRepo = userSubscriptionRepo;
+        this.messageRepo = messageRepo;
     }
 
 
@@ -149,12 +157,19 @@ public class MessageService {
 
 
 
-    public MessagePageDto findAll(Pageable pageable) {
-        Page<Message> page = messageRepo.findAll(pageable);
+    public MessagePageDto findForUser(Pageable pageable, User user) {
+        List<User> channels = userSubscriptionRepo.findBySubscriber(user)
+                .stream()
+                .map(UserSubscription::getChannel)
+                .collect(Collectors.toList());
+
+        channels.add(user);
+
+        Page<Message> page = messageRepo.findByAuthorIn(channels, pageable);
+
         return new MessagePageDto(
                 page.getContent(),
                 pageable.getPageNumber(),
-                page.getTotalPages()
-        );
+                page.getTotalPages());
     }
 }

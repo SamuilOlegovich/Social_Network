@@ -37,13 +37,14 @@ public class MessageController {
     // показываться будет только айди и имя
     @JsonView(Views.FullMessage.class)
     public MessagePageDto list(
+            @AuthenticationPrincipal User user,
             // для просмотра с прокруткой size начальное значение для показа,
             // sort - по какому полю сортируем,
             // direction - в каком направлении сортируем
             @PageableDefault(size = MESSAGES_PER_PAGE, sort = {"id"},
                     direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        return messageService.findAll(pageable);
+        return messageService.findForUser(pageable, user);
     }
 
 

@@ -3,6 +3,7 @@ package socialNetwork.db;
 import com.fasterxml.jackson.annotation.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -17,6 +18,7 @@ import java.util.Set;
 // сериализовать класс не планируем потому все стандартные методы генирируем обычной анотацией
 @Data
 @EqualsAndHashCode(of = { "id" })
+@ToString(of = { "id", "name" })
 public class User implements Serializable {
     // ни какого автогенератора айди не указываем,
     // так как айдишники будут приходить из гугл аунтефикатора
@@ -41,38 +43,22 @@ public class User implements Serializable {
 
 
     // подписки пользователя (на кого подписан)
-    @ManyToMany
-    @JoinTable(
-            // имя таблицы
-            name = "user_subscriptions",
-            joinColumns = @JoinColumn(name = "subscriber_id"),
-            inverseJoinColumns = @JoinColumn(name = "channel_id")
+    @OneToMany(
+            mappedBy = "subscriber",
+            orphanRemoval = true
     )
     @JsonView(Views.FullProfile.class)
-    // кастомизирует анотацию @JsonIdentityInfo
-    @JsonIdentityReference
-    // чтоб избежать стековервло при сериализации
-    @JsonIdentityInfo(
-            property = "id",
-            generator = ObjectIdGenerators.PropertyGenerator.class
-    )
-    private Set<User> subscriptions = new HashSet<>();
+    private Set<UserSubscription> subscriptions = new HashSet<>();
 
 
 
     // подписчики пользователя (кто подписан)
-    @ManyToMany
-    @JoinTable(
-            name = "user_subscriptions",
-            joinColumns = @JoinColumn(name = "channel_id"),
-            inverseJoinColumns = @JoinColumn(name = "subscriber_id")
+    @OneToMany(
+            mappedBy = "channel",
+            orphanRemoval = true,
+            cascade = CascadeType.ALL
     )
     @JsonView(Views.FullProfile.class)
-    @JsonIdentityReference
-    @JsonIdentityInfo(
-            property = "id",
-            generator = ObjectIdGenerators.PropertyGenerator.class
-    )
-    private Set<User> subscribers = new HashSet<>();
+    private Set<UserSubscription> subscribers = new HashSet<>();
 
 }
