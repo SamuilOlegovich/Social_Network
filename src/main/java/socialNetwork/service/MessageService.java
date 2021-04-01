@@ -53,7 +53,7 @@ public class MessageService {
                           WsSender wsSender,
                           UserSubscriptionRepo userSubscriptionRepo
     ) {
-        this.wsSender = wsSender.getSender(ObjectType.MESSAGE, Views.IdName.class);
+        this.wsSender = wsSender.getSender(ObjectType.MESSAGE, Views.FullMessage.class);
         this.userSubscriptionRepo = userSubscriptionRepo;
         this.messageRepo = messageRepo;
     }
@@ -129,9 +129,7 @@ public class MessageService {
 
 
     public Message update(Message messageFromDb, Message message) throws IOException {
-        // спринговый бин который скопирует из меседжа пользователя
-        // все поля кроме айди в меседж базы данных
-        BeanUtils.copyProperties(message, messageFromDb, "id");
+        messageFromDb.setText(message.getText());
         // добавляем в месседж данные о линки прикрепленного контента
         fillMeta(messageFromDb);
         Message updatedMessage = messageRepo.save(messageFromDb);
