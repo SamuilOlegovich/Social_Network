@@ -1,5 +1,6 @@
 package socialNetwork.service;
 
+import io.sentry.Sentry;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -49,10 +50,7 @@ public class MessageService {
 
 
     @Autowired
-    public MessageService(MessageRepo messageRepo,
-                          WsSender wsSender,
-                          UserSubscriptionRepo userSubscriptionRepo
-    ) {
+    public MessageService(MessageRepo messageRepo, WsSender wsSender, UserSubscriptionRepo userSubscriptionRepo) {
         this.wsSender = wsSender.getSender(ObjectType.MESSAGE, Views.FullMessage.class);
         this.userSubscriptionRepo = userSubscriptionRepo;
         this.messageRepo = messageRepo;
@@ -129,6 +127,7 @@ public class MessageService {
 
 
     public Message update(Message messageFromDb, Message message) throws IOException {
+//        Sentry.capture("Update message");
         messageFromDb.setText(message.getText());
         // добавляем в месседж данные о линки прикрепленного контента
         fillMeta(messageFromDb);
@@ -163,7 +162,6 @@ public class MessageService {
                 .filter(UserSubscription::isActive)
                 .map(UserSubscription::getChannel)
                 .collect(Collectors.toList());
-
         channels.add(user);
 
         Page<Message> page = messageRepo.findByAuthorIn(channels, pageable);
