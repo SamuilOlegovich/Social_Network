@@ -1,9 +1,6 @@
 package socialNetwork.db;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -14,7 +11,7 @@ import javax.persistence.*;
 @Table
 @Data
 @EqualsAndHashCode(of = { "id" })
-// класс таблица комм ентариев
+// класс таблица комментариев
 public class Comment {
     @Id
     @GeneratedValue
@@ -43,41 +40,4 @@ public class Comment {
     @JsonView(Views.IdName.class)
     private User author;
 
-
-
-
-
-
-
-//    public Long getId() {
-//        return id;
-//    }
-//
-//    public void setId(Long id) {
-//        this.id = id;
-//    }
-//
-//    public String getText() {
-//        return text;
-//    }
-//
-//    public void setText(String text) {
-//        this.text = text;
-//    }
-//
-//    public Message getMessage() {
-//        return message;
-//    }
-//
-//    public void setMessage(Message message) {
-//        this.message = message;
-//    }
-//
-//    public User getAuthor() {
-//        return author;
-//    }
-//
-//    public void setAuthor(User author) {
-//        this.author = author;
-//    }
 }
