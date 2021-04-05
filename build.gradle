@@ -42,6 +42,13 @@ repositories {
 	mavenCentral()
 }
 
+// указываем чтобы все не упало при деплое на серваке
+// перед сборкой нода будет дополнительно доустановлена либо использоваться из окружения
+// сиай сервнер - https://www.heroku.com
+node {
+	download = true
+}
+
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
